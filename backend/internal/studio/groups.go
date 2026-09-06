@@ -43,7 +43,8 @@ func hostListEligibleGroups(ctx context.Context, host sdk.Host, userID int64, pl
 		return nil, fmt.Errorf("platform 不能为空")
 	}
 	models := []string{strings.TrimSpace(model)}
-	if strings.EqualFold(platform, "seedance") && isSeedance25VideoModel(model) {
+	// 海外 2.5 要兼并旧 -ep 别名的分组；国内 2.5 是独立原生 ID，不做别名合并。
+	if strings.EqualFold(platform, "seedance") && canonicalSeedanceVideoModel(model) == videoModelSeedance25 {
 		models = []string{videoModelSeedance25, videoModelSeedance25LegacyEP}
 	}
 	if len(models) == 1 {

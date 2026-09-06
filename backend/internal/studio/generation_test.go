@@ -84,6 +84,11 @@ func TestValidateVideoModelParamsKeepsDomesticAndOverseasResolutionBoundaries(t 
 		{name: "overseas fast supports 720p", model: videoModelSeedanceFastOverseas, resolution: "720p"},
 		{name: "overseas fast rejects 1080p", model: videoModelSeedanceFastOverseas, resolution: "1080p", wantErr: true},
 		{name: "overseas mini rejects 4k", model: videoModelSeedanceMiniOverseas, resolution: "4k", wantErr: true},
+		{name: "domestic 2.5 supports 1080p", model: videoModelSeedance25Domestic, resolution: "1080p"},
+		{name: "domestic 2.5 rejects 4k", model: videoModelSeedance25Domestic, resolution: "4k", wantErr: true},
+		{name: "domestic fast supports 720p", model: videoModelSeedanceFastDomestic, resolution: "720p"},
+		{name: "domestic fast rejects 1080p", model: videoModelSeedanceFastDomestic, resolution: "1080p", wantErr: true},
+		{name: "domestic mini rejects 1080p", model: videoModelSeedanceMiniDomestic, resolution: "1080p", wantErr: true},
 	}
 
 	for _, tt := range tests {

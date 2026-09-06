@@ -19,6 +19,10 @@ const (
 	videoModelSeedanceStandardDomestic = "doubao-seedance-2-0-260128-a"
 	videoModelSeedanceFastOverseas     = "dreamina-seedance-2-0-fast-hc"
 	videoModelSeedanceMiniOverseas     = "dreamina-seedance-2-0-mini-hc"
+	// 国内（Doubao）三档原生 ID，与 gateway-seedance 国内 registry 对齐。
+	videoModelSeedance25Domestic   = "doubao-seedance-2-5-260628-a"
+	videoModelSeedanceFastDomestic = "doubao-seedance-2-0-fast-260128-a"
+	videoModelSeedanceMiniDomestic = "doubao-seedance-2-0-mini-260615-a"
 )
 
 func canonicalSeedanceVideoModel(model string) string {
@@ -29,8 +33,10 @@ func canonicalSeedanceVideoModel(model string) string {
 	return model
 }
 
+// isSeedance25VideoModel SD2.5 契约（海外与国内同一套时长 4~30s / -1、画幅域）。
 func isSeedance25VideoModel(model string) bool {
-	return canonicalSeedanceVideoModel(model) == videoModelSeedance25
+	canonical := canonicalSeedanceVideoModel(model)
+	return canonical == videoModelSeedance25 || strings.EqualFold(canonical, videoModelSeedance25Domestic)
 }
 
 func generationExecutorPluginID(platform string) string {
@@ -108,10 +114,11 @@ func executorSupportsOperation(executorID, operation string) bool {
 }
 
 // videoModelResolutions Seedance 各版本允许的分辨率（与 gateway-seedance
-// registry 对齐）。国内标准版不支持 4K；海外 fast / mini 只有 480p/720p。
+// registry 对齐）。国内标准版 / 国内 2.5 到 1080p、不支持 4K；
+// fast / mini（海外与国内）只有 480p/720p。
 func videoModelResolutions(model string) map[string]struct{} {
 	m := strings.ToLower(canonicalSeedanceVideoModel(model))
-	if m == videoModelSeedanceStandardDomestic {
+	if m == videoModelSeedanceStandardDomestic || m == videoModelSeedance25Domestic {
 		return map[string]struct{}{"480p": {}, "720p": {}, "1080p": {}}
 	}
 	if m == videoModelSeedance25 {

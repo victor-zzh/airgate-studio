@@ -13,6 +13,10 @@ export const VIDEO_MODEL_IDS = {
   standardDomestic: 'doubao-seedance-2-0-260128-a',
   fastOverseas: 'dreamina-seedance-2-0-fast-hc',
   miniOverseas: 'dreamina-seedance-2-0-mini-hc',
+  // 国内（Doubao）三档：与 gateway-seedance 国内原生 ID 对齐，只在国内分组可调度。
+  seedance25Domestic: 'doubao-seedance-2-5-260628-a',
+  fastDomestic: 'doubao-seedance-2-0-fast-260128-a',
+  miniDomestic: 'doubao-seedance-2-0-mini-260615-a',
   minimaxH3: 'MiniMax-H3',
   minimaxH3Max: 'MiniMax-H3-Max',
   grokVideo15: 'grok-imagine-video-1.5',
@@ -30,6 +34,12 @@ export function canonicalVideoModelId(id: string): string {
   return id.trim().toLowerCase() === LEGACY_SEEDANCE25_MODEL_ID
     ? VIDEO_MODEL_IDS.seedance25
     : id.trim();
+}
+
+/** SD2.5 契约（海外 / 国内同一套时长与画幅域）。 */
+export function isSeedance25VideoModelId(id: string): boolean {
+  const canonical = canonicalVideoModelId(id);
+  return canonical === VIDEO_MODEL_IDS.seedance25 || canonical === VIDEO_MODEL_IDS.seedance25Domestic;
 }
 
 export type VideoModelRegion = 'overseas' | 'domestic';
@@ -139,6 +149,15 @@ export const VIDEO_MODEL_REGISTRY: VideoModelConfig[] = [
     ratioOptions: SEEDANCE25_RATIOS,
   },
   {
+    id: VIDEO_MODEL_IDS.seedance25Domestic,
+    nameKey: 'model_sd25_domestic',
+    platform: 'seedance',
+    region: 'domestic',
+    resolutions: ['480p', '720p', '1080p'],
+    durationOptions: SEEDANCE25_DURATIONS,
+    ratioOptions: SEEDANCE25_RATIOS,
+  },
+  {
     id: VIDEO_MODEL_IDS.standardOverseas,
     nameKey: 'model_standard_overseas',
     platform: 'seedance',
@@ -160,10 +179,24 @@ export const VIDEO_MODEL_REGISTRY: VideoModelConfig[] = [
     resolutions: ['480p', '720p'],
   },
   {
+    id: VIDEO_MODEL_IDS.fastDomestic,
+    nameKey: 'model_fast_domestic',
+    platform: 'seedance',
+    region: 'domestic',
+    resolutions: ['480p', '720p'],
+  },
+  {
     id: VIDEO_MODEL_IDS.miniOverseas,
     nameKey: 'model_mini_overseas',
     platform: 'seedance',
     region: 'overseas',
+    resolutions: ['480p', '720p'],
+  },
+  {
+    id: VIDEO_MODEL_IDS.miniDomestic,
+    nameKey: 'model_mini_domestic',
+    platform: 'seedance',
+    region: 'domestic',
     resolutions: ['480p', '720p'],
   },
   {
@@ -279,7 +312,7 @@ export function videoDefaultsForModel(id: string): VideoGenerationSettings {
       defaults = KLING_VIDEO_DEFAULTS;
       break;
     default:
-      defaults = model.id === VIDEO_MODEL_IDS.seedance25
+      defaults = isSeedance25VideoModelId(model.id)
         ? SEEDANCE25_VIDEO_DEFAULTS
         : SEEDANCE20_VIDEO_DEFAULTS;
   }
@@ -294,7 +327,7 @@ export function normalizeVideoSettingsForModel(
   settings: VideoGenerationSettings,
 ): VideoGenerationSettings {
   const model = videoModelById(id);
-  if (model.id === VIDEO_MODEL_IDS.seedance25) return videoDefaultsForModel(model.id);
+  if (isSeedance25VideoModelId(model.id)) return videoDefaultsForModel(model.id);
 
   const defaults = videoDefaultsForModel(model.id);
   const durations: readonly number[] = model.durationOptions ?? VIDEO_DURATIONS;
@@ -347,8 +380,11 @@ export function videoGroupsForModel(
   if (!model || model.platform !== 'seedance' || model.region === 'domestic'
     || !model.id.startsWith('dreamina')) return groups;
 
+  // 国内组可能只声明了部分国内原生 ID（如仅标准版），取所有国内原生模型的并集。
   const domesticGroupIds = new Set(
-    (groupsByModel[VIDEO_MODEL_IDS.standardDomestic] ?? []).map(group => group.id),
+    VIDEO_MODEL_REGISTRY
+      .filter(item => item.platform === 'seedance' && item.region === 'domestic')
+      .flatMap(item => (groupsByModel[item.id] ?? []).map(group => group.id)),
   );
   return groups.filter(group => !domesticGroupIds.has(group.id));
 }
@@ -367,8 +403,11 @@ export const VIDEO_STRINGS = {
     model_standard_overseas: 'Seedance 2.0 标准（海外）',
     model_sd25_ep: 'Seedance 2.5 EP（海外）',
     model_standard_domestic: 'Seedance 2.0 标准（国内）',
+    model_sd25_domestic: 'Seedance 2.5（国内）',
     model_fast_overseas: 'Seedance 2.0 快速（海外）',
+    model_fast_domestic: 'Seedance 2.0 快速（国内）',
     model_mini_overseas: 'Seedance 2.0 迷你（海外）',
+    model_mini_domestic: 'Seedance 2.0 迷你（国内）',
     model_minimax_h3: '海螺 H3',
     model_minimax_h3_max: '海螺 H3 Max（极速）',
     model_grok_video15: 'Grok Imagine 1.5',
@@ -417,8 +456,11 @@ export const VIDEO_STRINGS = {
     model_standard_overseas: 'Seedance 2.0 Standard (Overseas)',
     model_sd25_ep: 'Seedance 2.5 EP (Overseas)',
     model_standard_domestic: 'Seedance 2.0 Standard (China)',
+    model_sd25_domestic: 'Seedance 2.5 (China)',
     model_fast_overseas: 'Seedance 2.0 Fast (Overseas)',
+    model_fast_domestic: 'Seedance 2.0 Fast (China)',
     model_mini_overseas: 'Seedance 2.0 Mini (Overseas)',
+    model_mini_domestic: 'Seedance 2.0 Mini (China)',
     model_minimax_h3: 'Hailuo H3',
     model_minimax_h3_max: 'Hailuo H3 Max (Fast)',
     model_grok_video15: 'Grok Imagine 1.5',
@@ -467,8 +509,11 @@ export const VIDEO_STRINGS = {
     model_standard_overseas: 'Seedance 2.0 標準（海外）',
     model_sd25_ep: 'Seedance 2.5 EP（海外）',
     model_standard_domestic: 'Seedance 2.0 標準（中国）',
+    model_sd25_domestic: 'Seedance 2.5（中国）',
     model_fast_overseas: 'Seedance 2.0 高速（海外）',
+    model_fast_domestic: 'Seedance 2.0 高速（中国）',
     model_mini_overseas: 'Seedance 2.0 ミニ（海外）',
+    model_mini_domestic: 'Seedance 2.0 ミニ（中国）',
     model_minimax_h3: 'Hailuo H3',
     model_minimax_h3_max: 'Hailuo H3 Max（高速）',
     model_grok_video15: 'Grok Imagine 1.5',
@@ -517,8 +562,11 @@ export const VIDEO_STRINGS = {
     model_standard_overseas: 'Seedance 2.0 標準（海外）',
     model_sd25_ep: 'Seedance 2.5 EP（海外）',
     model_standard_domestic: 'Seedance 2.0 標準（國內）',
+    model_sd25_domestic: 'Seedance 2.5（國內）',
     model_fast_overseas: 'Seedance 2.0 快速（海外）',
+    model_fast_domestic: 'Seedance 2.0 快速（國內）',
     model_mini_overseas: 'Seedance 2.0 迷你（海外）',
+    model_mini_domestic: 'Seedance 2.0 迷你（國內）',
     model_minimax_h3: '海螺 H3',
     model_minimax_h3_max: '海螺 H3 Max（極速）',
     model_grok_video15: 'Grok Imagine 1.5',
@@ -567,8 +615,11 @@ export const VIDEO_STRINGS = {
     model_standard_overseas: 'Seedance 2.0 Estándar (internacional)',
     model_sd25_ep: 'Seedance 2.5 EP (internacional)',
     model_standard_domestic: 'Seedance 2.0 Estándar (China)',
+    model_sd25_domestic: 'Seedance 2.5 (China)',
     model_fast_overseas: 'Seedance 2.0 Rápido (internacional)',
+    model_fast_domestic: 'Seedance 2.0 Rápido (China)',
     model_mini_overseas: 'Seedance 2.0 Mini (internacional)',
+    model_mini_domestic: 'Seedance 2.0 Mini (China)',
     model_minimax_h3: 'Hailuo H3',
     model_minimax_h3_max: 'Hailuo H3 Max (rápido)',
     model_grok_video15: 'Grok Imagine 1.5',
