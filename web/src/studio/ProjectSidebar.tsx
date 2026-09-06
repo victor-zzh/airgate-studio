@@ -23,7 +23,8 @@ const s: Record<string, CSSProperties> = {
     minWidth: 200,
     display: 'flex',
     flexDirection: 'column',
-    background: cssVar('bgDeep'),
+    // 与画廊同底色:控制台图标栏已经是一条竖线,项目栏再来一条深色分区就成了「三栏线」
+    background: cssVar('bgElevated'),
     borderRight: `1px solid ${cssVar('borderSubtle')}`,
     overflow: 'hidden',
   },
@@ -34,8 +35,7 @@ const s: Record<string, CSSProperties> = {
     minHeight: 44,
     padding: '0 12px',
     gap: 8,
-    borderBottom: `1px solid ${cssVar('borderSubtle')}`,
-    marginBottom: 6,
+    marginBottom: 2,
   },
   title: {
     fontSize: 11,

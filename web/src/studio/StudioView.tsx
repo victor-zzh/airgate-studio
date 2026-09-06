@@ -1292,7 +1292,7 @@ function ComposerBar({ promptRef, onOpenInspiration }: { promptRef?: React.Mutab
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
               </svg>
-              <span>{t('playground.studio_reference_short', { defaultValue: '参考图' })}{hasSource ? ` ${allSources.length}` : ''}</span>
+              {hasSource ? <span style={{ fontSize: 11, fontWeight: 600 }}>{allSources.length}</span> : null}
             </button>
           )}
           {isVideo ? (
@@ -1369,7 +1369,7 @@ function ComposerBar({ promptRef, onOpenInspiration }: { promptRef?: React.Mutab
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 18h6" /><path d="M10 22h4" /><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" />
                   </svg>
-                  <span style={{ fontSize: 11, fontWeight: 500 }}>{t('playground.studio_inspiration_gallery')}</span>
+                  <span className="studio-inspiration-label" style={{ fontSize: 11, fontWeight: 500 }}>{t('playground.studio_inspiration_gallery')}</span>
                 </button>
               )}
               <div style={c.countSelect} title={t('playground.studio_quantity')}>
@@ -1530,9 +1530,9 @@ const c: Record<string, CSSProperties> = {
   refBtn: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     height: 32,
-    padding: '0 10px',
+    padding: '0 8px',
     border: `1px solid ${cssVar('borderSubtle')}`,
     borderRadius: 8,
     background: 'transparent',
@@ -1546,9 +1546,9 @@ const c: Record<string, CSSProperties> = {
   refBtnActive: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     height: 32,
-    padding: '0 10px',
+    padding: '0 8px',
     border: `1px solid ${cssVar('text')}`,
     borderRadius: 8,
     background: cssVar('bgHover'),
@@ -1631,6 +1631,7 @@ const c: Record<string, CSSProperties> = {
     rowGap: 6,
     flex: 1,
     minWidth: 0,
+    // 控件按可用宽度收缩,尽量一行放完;实在放不下才换行(窄屏)
     flexWrap: 'wrap',
     overflow: 'visible',
   },
@@ -1720,13 +1721,13 @@ const c: Record<string, CSSProperties> = {
   // 不撑开（grow=0）：按基准宽度取宽，空间不足时可收缩到 minWidth，
   // 避免独占整行造成大片空白。基准放到能容下「Seedance 2.0 标准」不截断。
   modelSelect: {
-    flex: '0 1 218px',
-    minWidth: 150,
-    maxWidth: 240,
+    flex: '0 1 190px',
+    minWidth: 132,
+    maxWidth: 210,
   },
   sizePicker: {
-    flex: '0 1 150px',
-    minWidth: 120,
+    flex: '0 1 128px',
+    minWidth: 104,
   },
   // 生成数量：紧凑下拉（×N），替代原 4 连按钮,省一行空间
   countSelect: {
