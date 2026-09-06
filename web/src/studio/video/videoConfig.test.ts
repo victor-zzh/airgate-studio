@@ -32,7 +32,7 @@ function group(id: number, name: string): ImageGroup {
 
 describe('videoConfig', () => {
   it('注册国内外 Seedance 模型且分辨率边界正确', () => {
-    expect(VIDEO_MODEL_REGISTRY).toHaveLength(13);
+    expect(VIDEO_MODEL_REGISTRY).toHaveLength(16);
 	    expect(VIDEO_MODEL_IDS.seedance25).toBe('dreamina-seedance-2-5-260628');
 	    expect(VIDEO_MODEL_IDS.seedance25EP).toBe(VIDEO_MODEL_IDS.seedance25);
 	    expect(VIDEO_MODEL_REGISTRY.map(model => model.id)).not.toContain(LEGACY_SEEDANCE25_MODEL_ID);
@@ -46,7 +46,8 @@ describe('videoConfig', () => {
     expect(overseas.resolutions).toContain('4k');
     // grok 虽挂 seedance 平台但契约独立（自带时长/画幅表），此处只断言 dreamina/doubao 系。
     const seedance20 = VIDEO_MODEL_REGISTRY.filter(item => item.platform === 'seedance'
-      && item.id !== VIDEO_MODEL_IDS.seedance25EP && item.id !== VIDEO_MODEL_IDS.grokVideo15);
+      && item.id !== VIDEO_MODEL_IDS.seedance25EP && item.id !== VIDEO_MODEL_IDS.seedance25Domestic
+      && item.id !== VIDEO_MODEL_IDS.grokVideo15);
     for (const model of seedance20) {
       expect(model.durationOptions).toBeUndefined();
       expect(model.ratioOptions).toBeUndefined();
@@ -55,6 +56,18 @@ describe('videoConfig', () => {
     const domestic = videoModelById(VIDEO_MODEL_IDS.standardDomestic);
     expect(domestic.region).toBe('domestic');
     expect(domestic.resolutions).toEqual(['480p', '720p', '1080p']);
+    // 国内三档：2.5 到 1080p 且沿用 SD2.5 时长/画幅域；快速/迷你只到 720p。
+    const sd25Domestic = videoModelById(VIDEO_MODEL_IDS.seedance25Domestic);
+    expect(sd25Domestic.region).toBe('domestic');
+    expect(sd25Domestic.resolutions).toEqual(['480p', '720p', '1080p']);
+    expect(sd25Domestic.durationOptions).toEqual(SEEDANCE25_DURATIONS);
+    expect(sd25Domestic.ratioOptions).toEqual(SEEDANCE25_RATIOS);
+    expect(videoDefaultsForModel(VIDEO_MODEL_IDS.seedance25Domestic)).toEqual(SEEDANCE25_VIDEO_DEFAULTS);
+    for (const id of [VIDEO_MODEL_IDS.fastDomestic, VIDEO_MODEL_IDS.miniDomestic]) {
+      const model = videoModelById(id);
+      expect(model.region).toBe('domestic');
+      expect(model.resolutions).toEqual(['480p', '720p']);
+    }
 
     const fast = videoModelById(VIDEO_MODEL_IDS.fastOverseas);
     expect(fast.resolutions).toEqual(['480p', '720p']);
@@ -198,7 +211,8 @@ describe('videoConfig', () => {
 
   it('从 SD2.5 切回每个 2.0 模型时移除 2.5 专有参数', () => {
     const sd25Settings = videoDefaultsForModel(VIDEO_MODEL_IDS.seedance25EP);
-    const seedance20 = VIDEO_MODEL_REGISTRY.filter(item => item.platform === 'seedance' && item.id !== VIDEO_MODEL_IDS.seedance25EP);
+    const seedance20 = VIDEO_MODEL_REGISTRY.filter(item => item.platform === 'seedance'
+      && item.id !== VIDEO_MODEL_IDS.seedance25EP && item.id !== VIDEO_MODEL_IDS.seedance25Domestic);
     for (const model of seedance20) {
       const normalized = normalizeVideoSettingsForModel(model.id, sd25Settings);
       expect(normalized).toEqual(SEEDANCE20_VIDEO_DEFAULTS);

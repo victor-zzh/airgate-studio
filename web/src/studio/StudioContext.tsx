@@ -18,7 +18,7 @@ import { buildGenerationRouteSnapshot } from './generationRoute';
 import { startImageGroupDiscovery } from './imageGroupDiscovery';
 import {
   VIDEO_MODEL_REGISTRY,
-  VIDEO_MODEL_IDS,
+  isSeedance25VideoModelId,
   canonicalVideoModelId,
   videoModelById,
   videoGroupsForModel,
@@ -939,7 +939,7 @@ export function StudioProvider({ children }: { children: ReactNode }) {
     setVideoModelIdRaw(canonicalID);
     setSelectedVideoGroupId(null);
     setVideoSettings(current => normalizeVideoSettingsForModel(canonicalID, current));
-    if (canonicalID === VIDEO_MODEL_IDS.seedance25EP) {
+    if (isSeedance25VideoModelId(canonicalID)) {
       setVideoAudio(true);
       setVideoWatermark(false);
       setVideoReturnLastFrame(true);
