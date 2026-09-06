@@ -1161,44 +1161,52 @@ function EmptyState() {
 type GalleryMediaFilter = 'all' | 'image' | 'video';
 
 const galleryToolbarStyles: Record<string, CSSProperties> = {
+  // 整行吸顶的工具条:抵消画廊的内边距铺满整行,底部发丝线与项目栏表头对齐;
+  // 分段控件带文字,不再是只剩三个小图标的浮盒
   bar: {
     position: 'sticky',
-    top: 0,
+    top: -12,
     zIndex: 12,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 10,
-    padding: '6px 0 10px',
-    marginBottom: 4,
+    minHeight: 44,
+    margin: '-12px -20px 14px',
+    padding: '0 20px',
+    borderBottom: `1px solid ${cssVar('borderSubtle')}`,
     background: cssVar('bgElevated'),
   },
   segmented: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 2,
-    padding: 2,
+    gap: 0,
     border: `1px solid ${cssVar('borderSubtle')}`,
-    borderRadius: 8,
-    background: cssVar('bgDeep'),
+    borderRadius: 4,
+    overflow: 'hidden',
+    background: 'transparent',
   },
   button: {
-    width: 30,
-    height: 26,
+    height: 28,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0,
+    gap: 6,
+    padding: '0 10px',
     border: 0,
-    borderRadius: 6,
+    borderRadius: 0,
     background: 'transparent',
-    color: cssVar('textTertiary'),
+    color: cssVar('textSecondary'),
     cursor: 'pointer',
+    font: 'inherit',
+    fontSize: 12,
+    fontWeight: 500,
   },
   buttonActive: {
     background: cssVar('bgHover'),
     color: cssVar('text'),
-    boxShadow: `inset 0 0 0 1px ${cssVar('borderSubtle')}`,
+    boxShadow: 'inset 0 -2px 0 var(--ag-accent, var(--ag-primary))',
+    fontWeight: 600,
   },
   count: {
     minWidth: 24,
@@ -1336,11 +1344,12 @@ export function GalleryView() {
               onClick={() => setMediaFilter(filter)}
             >
               <GalleryFilterIcon filter={filter} />
+              <span>{filterLabels[filter]}</span>
             </button>
           ))}
         </div>
         <span style={galleryToolbarStyles.count} aria-live="polite">
-          {visibleGallery.length + visibleTasks.length}
+          {t('playground.studio_gallery_count', { count: visibleGallery.length + visibleTasks.length, defaultValue: '{{count}} 项' })}
         </span>
       </div>
 
