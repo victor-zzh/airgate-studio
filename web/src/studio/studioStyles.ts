@@ -5,11 +5,12 @@ export const studioStyles: Record<string, CSSProperties> = {
   // ── Layout ────────────────────────────────────────────────────────────────
 
   layout: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
+    // 嵌在控制台壳层的全出血容器里(core 的 .ag-main-content:has([data-full-bleed]) 给到 100% 高),
+    // 不再 fixed 盖住整个视口;顶栏、账户区与导航图标栏由壳层提供。
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    minHeight: 0,
     display: 'flex',
     flexDirection: 'row',
     background: cssVar('bgElevated'),

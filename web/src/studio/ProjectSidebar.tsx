@@ -70,7 +70,7 @@ const s: Record<string, CSSProperties> = {
     alignItems: 'center',
     gap: 6,
     padding: '8px 10px',
-    borderRadius: 8,
+    borderRadius: 6,
     cursor: 'pointer',
     color: cssVar('textSecondary'),
     fontSize: 13,
@@ -79,9 +79,17 @@ const s: Record<string, CSSProperties> = {
     userSelect: 'none',
   },
   itemActive: {
-    background: cssVar('primarySubtle'),
+    background: cssVar('bgHover'),
     color: cssVar('text'),
     fontWeight: 600,
+  },
+  // 当前项右侧的 6px 强调色圆点(HopBase 为橙),替代实心块与竖线
+  itemDot: {
+    width: 6,
+    height: 6,
+    flexShrink: 0,
+    borderRadius: 999,
+    background: 'var(--ag-accent, var(--ag-primary))',
   },
   itemName: {
     flex: 1,
@@ -311,6 +319,7 @@ export function ProjectSidebar() {
                   <span style={s.itemName}>{displayProjectName(p.name, t)}</span>
                   {active && (
                     <>
+                      <span aria-hidden="true" style={s.itemDot} />
                       <button
                         type="button"
                         style={s.itemAction}

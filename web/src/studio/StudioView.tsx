@@ -11,7 +11,7 @@ import { buildModelRouteOptions, localizeRouteLabel, modelRouteOptionValue, pars
 import { commitComposerSend, isComposerSubmitKey } from './composerSend';
 import { videoModelById, useVideoStrings, formatVideoCostEstimate } from './video/videoConfig';
 import { VideoParamsPopover } from './video/VideoParamsPopover';
-import { ProjectSidebar, ThemeToggleButton } from './ProjectSidebar';
+import { ProjectSidebar } from './ProjectSidebar';
 import { api, type InspirationCatalog, type InspirationItem } from '../api';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -626,67 +626,6 @@ const tpl: Record<string, CSSProperties> = {
 
 // ── TopNav (fixed global nav bar) ──────────────────────────────────────────
 
-const floatNav: Record<string, CSSProperties> = {
-  wrap: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '0 0 12px',
-    flexShrink: 0,
-  },
-  btn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 5,
-    padding: '5px 10px',
-    borderRadius: 8,
-    border: `1px solid ${cssVar('borderSubtle')}`,
-    background: 'transparent',
-    color: cssVar('textTertiary'),
-    fontSize: 11,
-    fontWeight: 500,
-    textDecoration: 'none',
-    fontFamily: 'inherit',
-    cursor: 'pointer',
-    transition: 'all 0.15s',
-  },
-  iconBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    border: `1px solid ${cssVar('borderSubtle')}`,
-    background: 'transparent',
-    color: cssVar('textTertiary'),
-    cursor: 'pointer',
-    padding: 0,
-    transition: 'all 0.15s',
-  },
-  bottomLeft: {
-    position: 'absolute',
-    left: 20,
-    bottom: 18,
-    zIndex: 31,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  },
-  mobileBottomLeft: {
-    position: 'absolute',
-    left: 20,
-    bottom: 178,
-    zIndex: 31,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  },
-  compactThemeBtn: {
-    width: 28,
-    height: 28,
-  },
-};
 
 const createPanelBase: CSSProperties = {
   flex: 1,
@@ -698,34 +637,8 @@ const createPanelBase: CSSProperties = {
   position: 'relative',
 };
 
-function ConsoleBackLink() {
-  const { t } = useTranslation();
-  return (
-    <a href="/" style={floatNav.btn} className="studio-console-link">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
-      </svg>
-      <span>{t('playground.studio_console')}</span>
-    </a>
-  );
-}
 
-function FloatingStudioControls({ showConsoleLink }: { showConsoleLink: boolean }) {
-  return (
-    <div style={floatNav.bottomLeft} className="studio-corner-controls">
-      {showConsoleLink && <ConsoleBackLink />}
-      <ThemeToggleButton style={floatNav.compactThemeBtn} />
-    </div>
-  );
-}
 
-function MobileStudioControls() {
-  return (
-    <div style={floatNav.mobileBottomLeft} className="studio-mobile-corner-controls">
-      <ThemeToggleButton style={floatNav.compactThemeBtn} />
-    </div>
-  );
-}
 
 const fallbackInspirationCatalog: InspirationCatalog = {
   version: 'local',
@@ -2054,14 +1967,13 @@ function StudioLayout() {
     <InspirationDrawer onSelect={handleTemplate} onClose={() => setInspirationOpen(false)} />
   ) : null;
 
-  const showFallbackConsoleLink = initialLoadComplete && !projectsEnabled;
-  const floatingControls = projectsEnabled
-    ? <MobileStudioControls />
-    : <FloatingStudioControls showConsoleLink={showFallbackConsoleLink} />;
+  // 工作坊已嵌入控制台壳层:导航(图标栏)、主题切换与账户区都由壳层提供,
+  // 不再在角落浮一枚主题按钮 / 返回控制台链接。
+  const floatingControls = null;
 
   if (!initialLoadComplete) {
     return (
-      <div style={ss.layout} data-mobile-tab={mobileTab}>
+      <div style={ss.layout} data-full-bleed data-mobile-tab={mobileTab}>
         <style>{studioCSS}</style>
         {mobileTabs}
         {projectPanel}
@@ -2088,7 +2000,7 @@ function StudioLayout() {
 
   if (isEmpty) {
     return (
-      <div style={ss.layout} data-mobile-tab={mobileTab}>
+      <div style={ss.layout} data-full-bleed data-mobile-tab={mobileTab}>
         <style>{studioCSS}</style>
         {mobileTabs}
         {projectPanel}
@@ -2122,7 +2034,7 @@ function StudioLayout() {
   }
 
   return (
-    <div style={ss.layout} data-mobile-tab={mobileTab}>
+    <div style={ss.layout} data-full-bleed data-mobile-tab={mobileTab}>
       <style>{studioCSS}</style>
       {mobileTabs}
       {projectPanel}
