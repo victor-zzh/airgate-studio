@@ -31,8 +31,11 @@ const s: Record<string, CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '12px 12px 8px',
+    minHeight: 44,
+    padding: '0 12px',
     gap: 8,
+    borderBottom: `1px solid ${cssVar('borderSubtle')}`,
+    marginBottom: 6,
   },
   title: {
     fontSize: 11,

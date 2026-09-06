@@ -1181,6 +1181,20 @@ function ComposerBar({ promptRef, onOpenInspiration }: { promptRef?: React.Mutab
               </button>
             </div>
           ))}
+          {!isVideo && (
+            <button
+              type="button"
+              style={c.thumbAddTile}
+              className="studio-gallery-action"
+              onClick={() => fileInputRef.current?.click()}
+              title={t('playground.studio_add_reference')}
+              aria-label={t('playground.studio_add_reference')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M5 12h14" /><path d="M12 5v14" />
+              </svg>
+            </button>
+          )}
           {allSources.length > 1 && (
             <button type="button" style={c.sourceActionBtn} className="studio-gallery-action" onClick={clearAllSources}>
               {t('playground.studio_clear_all')}
@@ -1214,17 +1228,6 @@ function ComposerBar({ promptRef, onOpenInspiration }: { promptRef?: React.Mutab
 
       {/* Prompt textarea */}
       <div data-onboarding-target="studio-prompt" style={c.promptArea}>
-        <button
-          type="button"
-          style={c.promptUploadBtn}
-          className="studio-gallery-action"
-          onClick={() => fileInputRef.current?.click()}
-          title={t('playground.studio_add_reference')}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
-          </svg>
-        </button>
         <textarea
           ref={textareaRef}
           style={c.textareaWithUpload}
@@ -1278,6 +1281,20 @@ function ComposerBar({ promptRef, onOpenInspiration }: { promptRef?: React.Mutab
               </svg>
             </button>
           </div>
+          {!isVideo && (
+            <button
+              type="button"
+              style={hasSource ? c.refBtnActive : c.refBtn}
+              className="studio-gallery-action"
+              onClick={() => fileInputRef.current?.click()}
+              title={t('playground.studio_add_reference')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" />
+              </svg>
+              <span>{t('playground.studio_reference_short', { defaultValue: '参考图' })}{hasSource ? ` ${allSources.length}` : ''}</span>
+            </button>
+          )}
           {isVideo ? (
             <>
               <div style={c.modelSelect}>
@@ -1494,6 +1511,54 @@ const c: Record<string, CSSProperties> = {
     WebkitBackdropFilter: 'blur(8px)',
     transition: 'opacity 0.16s, transform 0.16s, background 0.16s, border-color 0.16s',
   },
+  // 参考图条里的「+」小格:与缩略图同高的虚线格,点了继续加图
+  thumbAddTile: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 48,
+    flexShrink: 0,
+    border: `1px dashed ${cssVar('borderSubtle')}`,
+    borderRadius: 8,
+    background: 'transparent',
+    color: cssVar('textTertiary'),
+    cursor: 'pointer',
+    padding: 0,
+  },
+  // 工具栏里的「参考图」入口(图像模式);有图时描边加深并带张数
+  refBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    height: 32,
+    padding: '0 10px',
+    border: `1px solid ${cssVar('borderSubtle')}`,
+    borderRadius: 8,
+    background: 'transparent',
+    color: cssVar('textSecondary'),
+    cursor: 'pointer',
+    font: 'inherit',
+    fontSize: 12,
+    fontWeight: 500,
+    whiteSpace: 'nowrap',
+  },
+  refBtnActive: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    height: 32,
+    padding: '0 10px',
+    border: `1px solid ${cssVar('text')}`,
+    borderRadius: 8,
+    background: cssVar('bgHover'),
+    color: cssVar('text'),
+    cursor: 'pointer',
+    font: 'inherit',
+    fontSize: 12,
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+  },
   sourceActionBtn: {
     padding: '3px 8px',
     border: `1px solid ${cssVar('borderSubtle')}`,
@@ -1518,24 +1583,6 @@ const c: Record<string, CSSProperties> = {
     position: 'relative',
     minHeight: COMPOSER_TEXTAREA_HEIGHT,
   },
-  promptUploadBtn: {
-    position: 'absolute',
-    left: 14,
-    top: 8,
-    zIndex: 2,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 42,
-    height: 36,
-    border: `1px solid ${cssVar('borderSubtle')}`,
-    borderRadius: 9,
-    background: 'transparent',
-    color: cssVar('textTertiary'),
-    cursor: 'pointer',
-    padding: 0,
-    transition: 'all 0.15s',
-  },
   textarea: {
     width: '100%',
     height: COMPOSER_TEXTAREA_HEIGHT,
@@ -1558,7 +1605,7 @@ const c: Record<string, CSSProperties> = {
     height: COMPOSER_TEXTAREA_HEIGHT,
     minHeight: COMPOSER_TEXTAREA_HEIGHT,
     maxHeight: COMPOSER_TEXTAREA_HEIGHT,
-    padding: '8px 14px 8px 68px',
+    padding: '8px 14px',
     border: 'none',
     background: 'transparent',
     color: cssVar('text'),
